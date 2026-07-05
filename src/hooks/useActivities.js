@@ -9,6 +9,7 @@ export function useActivities() {
     const { data, error } = await supabase
       .from('activities')
       .select('*')
+      .is('deleted_at', null)
       .order('id', { ascending: false })
 
     if (error) {

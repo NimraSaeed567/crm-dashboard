@@ -98,3 +98,24 @@ insert into revenue_by_month (month, revenue) values
   ('May', 14300),
   ('Jun', 16700),
   ('Jul', 18450);
+
+-- Soft delete + audit log: "delete" in the app no longer removes a row,
+-- it stamps deleted_at and the record disappears from every list (all
+-- reads filter deleted_at is null). Every delete also writes a row to
+-- audit_log with a full snapshot of the record at the time it was removed.
+alter table customers add column if not exists deleted_at timestamptz;
+alter table tasks add column if not exists deleted_at timestamptz;
+alter table activities add column if not exists deleted_at timestamptz;
+
+create table if not exists audit_log (
+  id bigint generated always as identity primary key,
+  table_name text not null,
+  record_id bigint not null,
+  action text not null,
+  record_snapshot jsonb,
+  created_at timestamptz not null default now()
+);
+
+alter table audit_log enable row level security;
+create policy "public read audit_log" on audit_log for select using (true);
+create policy "public write audit_log" on audit_log for insert with check (true);

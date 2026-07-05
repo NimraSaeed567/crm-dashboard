@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search, ChevronUp, ChevronDown, Plus, Trash2, Pencil } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient'
+import { softDeleteRecord } from '../lib/softDelete'
 import TaskFormModal from './TaskFormModal'
 import Pagination from './Pagination'
 
@@ -72,10 +73,10 @@ export default function TaskManager({ tasks, onChanged }) {
     if (!error) onChanged()
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (task) => {
     if (!window.confirm('Delete this task?')) return
-    setDeletingId(id)
-    const { error } = await supabase.from('tasks').delete().eq('id', id)
+    setDeletingId(task.id)
+    const { error } = await softDeleteRecord('tasks', task)
     setDeletingId(null)
     if (!error) onChanged()
   }
@@ -171,7 +172,7 @@ export default function TaskManager({ tasks, onChanged }) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDelete(t.id)}
+                    onClick={() => handleDelete(t)}
                     disabled={deletingId === t.id}
                     className="h-7 w-7 inline-flex items-center justify-center rounded-md text-red-500 hover:bg-red-50 hover:text-red-700 disabled:opacity-40"
                     title="Delete task"

@@ -11,9 +11,9 @@ export function useDashboardData() {
     setState((s) => ({ ...s, loading: true }))
 
     const [customersRes, activitiesRes, tasksRes] = await Promise.all([
-      supabase.from('customers').select('*').order('id', { ascending: false }),
-      supabase.from('activities').select('*').order('id', { ascending: false }),
-      supabase.from('tasks').select('*').order('id', { ascending: false }),
+      supabase.from('customers').select('*').is('deleted_at', null).order('id', { ascending: false }),
+      supabase.from('activities').select('*').is('deleted_at', null).order('id', { ascending: false }),
+      supabase.from('tasks').select('*').is('deleted_at', null).order('id', { ascending: false }),
     ])
 
     const error = customersRes.error || activitiesRes.error || tasksRes.error

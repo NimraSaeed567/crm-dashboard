@@ -9,6 +9,7 @@ export function useTasks() {
     const { data, error } = await supabase
       .from('tasks')
       .select('*')
+      .is('deleted_at', null)
       .order('id', { ascending: false })
 
     if (error) {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search, ChevronUp, ChevronDown, Plus, Trash2, Pencil } from 'lucide-react'
-import { supabase } from '../lib/supabaseClient'
+import { softDeleteRecord } from '../lib/softDelete'
 import CustomerFormModal from './CustomerFormModal'
 import Pagination from './Pagination'
 
@@ -75,10 +75,10 @@ export default function CustomerTable({ customers, onChanged }) {
     }
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (customer) => {
     if (!window.confirm('Delete this customer?')) return
-    setDeletingId(id)
-    const { error } = await supabase.from('customers').delete().eq('id', id)
+    setDeletingId(customer.id)
+    const { error } = await softDeleteRecord('customers', customer)
     setDeletingId(null)
     if (!error) onChanged()
   }
@@ -169,7 +169,7 @@ export default function CustomerTable({ customers, onChanged }) {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation()
-                      handleDelete(c.id)
+                      handleDelete(c)
                     }}
                     disabled={deletingId === c.id}
                     className="h-7 w-7 inline-flex items-center justify-center rounded-md text-red-500 hover:bg-red-50 hover:text-red-700 disabled:opacity-40"

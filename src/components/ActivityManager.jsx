@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search, ChevronUp, ChevronDown, Plus, Trash2, Pencil, Mail, Phone, Calendar, Activity as ActivityIcon } from 'lucide-react'
-import { supabase } from '../lib/supabaseClient'
+import { softDeleteRecord } from '../lib/softDelete'
 import ActivityFormModal from './ActivityFormModal'
 import Pagination from './Pagination'
 
@@ -69,10 +69,10 @@ export default function ActivityManager({ activities, customers, onChanged }) {
     }
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (activity) => {
     if (!window.confirm('Delete this activity?')) return
-    setDeletingId(id)
-    const { error } = await supabase.from('activities').delete().eq('id', id)
+    setDeletingId(activity.id)
+    const { error } = await softDeleteRecord('activities', activity)
     setDeletingId(null)
     if (!error) onChanged()
   }
@@ -151,7 +151,7 @@ export default function ActivityManager({ activities, customers, onChanged }) {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDelete(a.id)}
+                      onClick={() => handleDelete(a)}
                       disabled={deletingId === a.id}
                       className="h-7 w-7 inline-flex items-center justify-center rounded-md text-red-500 hover:bg-red-50 hover:text-red-700 disabled:opacity-40"
                       title="Delete activity"
