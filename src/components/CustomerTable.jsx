@@ -85,11 +85,11 @@ export default function CustomerTable({ customers, onChanged }) {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-      <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <h3 className="text-sm font-semibold text-gray-700">
           Customers <span className="text-gray-400 font-normal">({filtered.length})</span>
         </h3>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
           <div className="relative">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -97,13 +97,13 @@ export default function CustomerTable({ customers, onChanged }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search customers..."
-              className="pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 w-64"
+              className="pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 w-full sm:w-64"
             />
           </div>
           <button
             type="button"
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 shrink-0"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 shrink-0"
           >
             <Plus size={15} />
             Add Customer
