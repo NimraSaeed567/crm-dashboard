@@ -5,6 +5,7 @@ import PipelineChart from '../components/PipelineChart'
 import RevenueChart from '../components/RevenueChart'
 import SourceChart from '../components/SourceChart'
 import RecentCustomers from '../components/RecentCustomers'
+import RecentInvoices from '../components/RecentInvoices'
 import ActivityFeed from '../components/ActivityFeed'
 import TaskList from '../components/TaskList'
 
@@ -23,13 +24,15 @@ export default function Dashboard() {
     )
   }
 
-  const { kpis, customers, pipeline, revenueByMonth, customersBySource, activities, tasks } = data
+  const { kpis, customers, pipeline, revenueByMonth, customersBySource, activities, tasks, invoices } = data
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">Overview of your customers and sales activity.</p>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Dashboard</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Overview of your customers and sales activity.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -71,6 +74,7 @@ export default function Dashboard() {
         </div>
       </div>
 
+      <RecentInvoices invoices={invoices} />
       <RecentCustomers customers={customers} />
     </div>
   )

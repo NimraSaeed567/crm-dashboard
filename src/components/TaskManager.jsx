@@ -82,10 +82,10 @@ export default function TaskManager({ tasks, onChanged }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <h3 className="text-sm font-semibold text-gray-700">
-          Tasks <span className="text-gray-400 font-normal">({filtered.length})</span>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+          Tasks <span className="text-gray-400 dark:text-gray-500 font-normal">({filtered.length})</span>
         </h3>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
           <div className="relative">
@@ -95,7 +95,7 @@ export default function TaskManager({ tasks, onChanged }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search tasks..."
-              className="pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 w-full sm:w-64"
+              className="pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400 w-full sm:w-64"
             />
           </div>
           <button
@@ -112,13 +112,13 @@ export default function TaskManager({ tasks, onChanged }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-gray-900 border-b border-gray-200">
+            <tr className="text-left text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">
               <th className="py-2 pr-4 font-bold w-10" />
               {COLUMNS.map((col) => (
                 <th
                   key={col.key}
                   onClick={() => toggleSort(col.key)}
-                  className="py-2 pr-4 font-bold cursor-pointer select-none whitespace-nowrap hover:text-indigo-600 transition-colors"
+                  className="py-2 pr-4 font-bold cursor-pointer select-none whitespace-nowrap hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                 >
                   <span className="inline-flex items-center gap-1">
                     {col.label}
@@ -132,30 +132,32 @@ export default function TaskManager({ tasks, onChanged }) {
           </thead>
           <tbody>
             {paged.map((t) => (
-              <tr key={t.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
+              <tr key={t.id} className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/60 dark:hover:bg-gray-800/60">
                 <td className="py-3 pr-4" onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
                     checked={t.done}
                     onChange={() => toggleDone(t)}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-400 cursor-pointer"
+                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-400 cursor-pointer"
                   />
                 </td>
                 <td
                   onClick={() => setEditingTask(t)}
                   className={`py-3 pr-4 font-medium cursor-pointer whitespace-nowrap ${
-                    t.done ? 'line-through text-gray-400' : 'text-gray-800'
+                    t.done ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-100'
                   }`}
                 >
                   {t.title}
                 </td>
-                <td onClick={() => setEditingTask(t)} className="py-3 pr-4 text-gray-500 whitespace-nowrap cursor-pointer">
+                <td onClick={() => setEditingTask(t)} className="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap cursor-pointer">
                   {t.dueDate}
                 </td>
                 <td onClick={() => setEditingTask(t)} className="py-3 pr-4 whitespace-nowrap cursor-pointer">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      t.done ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'
+                      t.done
+                        ? 'bg-green-50 text-green-600 dark:bg-green-950/50 dark:text-green-400'
+                        : 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400'
                     }`}
                   >
                     {t.done ? 'Done' : 'Pending'}
@@ -165,7 +167,7 @@ export default function TaskManager({ tasks, onChanged }) {
                   <button
                     type="button"
                     onClick={() => setEditingTask(t)}
-                    className="h-7 w-7 inline-flex items-center justify-center rounded-md text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 mr-1"
+                    className="h-7 w-7 inline-flex items-center justify-center rounded-md text-gray-500 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 dark:hover:text-indigo-400 mr-1"
                     title="Edit task"
                   >
                     <Pencil size={15} />
@@ -174,7 +176,7 @@ export default function TaskManager({ tasks, onChanged }) {
                     type="button"
                     onClick={() => handleDelete(t)}
                     disabled={deletingId === t.id}
-                    className="h-7 w-7 inline-flex items-center justify-center rounded-md text-red-500 hover:bg-red-50 hover:text-red-700 disabled:opacity-40"
+                    className="h-7 w-7 inline-flex items-center justify-center rounded-md text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 hover:text-red-700 disabled:opacity-40"
                     title="Delete task"
                   >
                     <Trash2 size={15} />

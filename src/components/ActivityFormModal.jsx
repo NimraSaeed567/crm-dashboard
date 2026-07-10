@@ -48,11 +48,11 @@ export default function ActivityFormModal({ activity, customers, onClose, onSave
     <Modal title={isEditing ? 'Edit Activity' : 'Log Activity'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Customer</label>
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Customer</label>
           <select
             value={form.customerName}
             onChange={(e) => setForm((f) => ({ ...f, customerName: e.target.value }))}
-            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"
+            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
           >
             {customers.map((c) => (
               <option key={c.id} value={c.name}>
@@ -62,11 +62,11 @@ export default function ActivityFormModal({ activity, customers, onClose, onSave
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Type</label>
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Type</label>
           <select
             value={form.type}
             onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
-            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"
+            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
           >
             {TYPES.map((t) => (
               <option key={t} value={t}>
@@ -76,18 +76,18 @@ export default function ActivityFormModal({ activity, customers, onClose, onSave
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
             Note <span className="text-red-500">*</span>
           </label>
           <input
             required
             value={form.note}
             onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
-            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"
+            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
             Date <span className="text-red-500">*</span>
           </label>
           <input
@@ -95,7 +95,7 @@ export default function ActivityFormModal({ activity, customers, onClose, onSave
             required
             value={form.date}
             onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"
+            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
           />
         </div>
 
@@ -105,7 +105,7 @@ export default function ActivityFormModal({ activity, customers, onClose, onSave
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-2 text-sm rounded-lg text-gray-600 hover:bg-gray-50"
+            className="px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
           >
             Cancel
           </button>

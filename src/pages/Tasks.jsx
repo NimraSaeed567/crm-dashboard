@@ -7,8 +7,8 @@ export default function Tasks() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">Tasks</h1>
-        <p className="text-sm text-gray-500 mt-1">Add, edit, and track every task to completion.</p>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Tasks</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Add, edit, and track every task to completion.</p>
       </div>
 
       {loading && <div className="p-10 text-center text-sm text-gray-400">Loading tasks…</div>}

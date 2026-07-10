@@ -39,18 +39,18 @@ export default function TaskFormModal({ task, onClose, onSaved }) {
     <Modal title={isEditing ? 'Edit Task' : 'Add Task'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
             Title <span className="text-red-500">*</span>
           </label>
           <input
             required
             value={form.title}
             onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"
+            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
             Due Date <span className="text-red-500">*</span>
           </label>
           <input
@@ -58,16 +58,16 @@ export default function TaskFormModal({ task, onClose, onSaved }) {
             required
             value={form.dueDate}
             onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))}
-            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"
+            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
           />
         </div>
         {isEditing && (
-          <label className="flex items-center gap-2 text-sm text-gray-600">
+          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
             <input
               type="checkbox"
               checked={form.done}
               onChange={(e) => setForm((f) => ({ ...f, done: e.target.checked }))}
-              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-400"
+              className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-400"
             />
             Completed
           </label>
@@ -79,7 +79,7 @@ export default function TaskFormModal({ task, onClose, onSaved }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-2 text-sm rounded-lg text-gray-600 hover:bg-gray-50"
+            className="px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
           >
             Cancel
           </button>

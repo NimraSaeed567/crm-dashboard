@@ -7,8 +7,8 @@ export default function Customers() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">Customers</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Customers</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Add, edit, and manage every customer record.
         </p>
       </div>

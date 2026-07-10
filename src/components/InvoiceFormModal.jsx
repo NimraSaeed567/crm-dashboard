@@ -3,34 +3,37 @@ import { supabase } from '../lib/supabaseClient'
 import { useToast } from '../context/ToastContext'
 import Modal from './Modal'
 
-const SOURCES = ['Referral', 'Website', 'Cold Outreach', 'Social Media']
-const STATUSES = ['New', 'Contacted', 'Qualified', 'Proposal', 'Won', 'Lost']
+const STATUSES = ['Draft', 'Sent', 'Paid', 'Overdue']
 
-const emptyForm = {
-  name: '',
-  company: '',
-  email: '',
-  source: SOURCES[0],
-  status: STATUSES[0],
-  dealValue: '',
-  lastContact: new Date().toISOString().slice(0, 10),
+function nextInvoiceNumber(invoices) {
+  const numbers = invoices
+    .map((i) => parseInt(String(i.invoiceNumber).replace(/\D/g, ''), 10))
+    .filter((n) => !Number.isNaN(n))
+  const next = (numbers.length ? Math.max(...numbers) : 1000) + 1
+  return `INV-${next}`
 }
 
-export default function CustomerFormModal({ customer, customers = [], onClose, onSaved }) {
-  const isEditing = Boolean(customer)
+export default function InvoiceFormModal({ invoice, invoices = [], customers = [], onClose, onSaved }) {
+  const isEditing = Boolean(invoice)
   const showToast = useToast()
   const [form, setForm] = useState(
-    customer
+    invoice
       ? {
-          name: customer.name,
-          company: customer.company,
-          email: customer.email,
-          source: customer.source,
-          status: customer.status,
-          dealValue: String(customer.dealValue),
-          lastContact: customer.lastContact,
+          invoiceNumber: invoice.invoiceNumber,
+          customerName: invoice.customerName,
+          amount: String(invoice.amount),
+          status: invoice.status,
+          issueDate: invoice.issueDate,
+          dueDate: invoice.dueDate,
         }
-      : emptyForm
+      : {
+          invoiceNumber: nextInvoiceNumber(invoices),
+          customerName: customers[0]?.name || '',
+          amount: '',
+          status: STATUSES[0],
+          issueDate: new Date().toISOString().slice(0, 10),
+          dueDate: new Date().toISOString().slice(0, 10),
+        }
   )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -39,94 +42,73 @@ export default function CustomerFormModal({ customer, customers = [], onClose, o
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
-    const trimmedName = form.name.trim()
-    const isDuplicate = customers.some(
-      (c) => c.name.trim().toLowerCase() === trimmedName.toLowerCase() && c.id !== customer?.id
-    )
-    if (isDuplicate) {
-      window.alert(`A customer named "${trimmedName}" already exists.`)
-      return
-    }
-
     setSaving(true)
     setError(null)
 
     const payload = {
-      name: form.name.trim(),
-      company: form.company.trim(),
-      email: form.email.trim(),
-      source: form.source,
+      invoice_number: form.invoiceNumber.trim(),
+      customer_name: form.customerName,
+      amount: Number(form.amount) || 0,
       status: form.status,
-      deal_value: Number(form.dealValue) || 0,
-      last_contact: form.lastContact,
+      issue_date: form.issueDate,
+      due_date: form.dueDate,
     }
 
     const { error } = isEditing
-      ? await supabase.from('customers').update(payload).eq('id', customer.id)
-      : await supabase.from('customers').insert(payload)
+      ? await supabase.from('invoices').update(payload).eq('id', invoice.id)
+      : await supabase.from('invoices').insert(payload)
 
     setSaving(false)
     if (error) {
       setError(error.message)
       return
     }
-    if (!isEditing) showToast('Customer added successfully')
+    if (!isEditing) showToast('Invoice added successfully')
     onSaved()
     onClose()
   }
 
   return (
-    <Modal title={isEditing ? 'Edit Customer' : 'Add Customer'} onClose={onClose}>
+    <Modal title={isEditing ? 'Edit Invoice' : 'Add Invoice'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-            Name <span className="text-red-500">*</span>
+            Invoice Number <span className="text-red-500">*</span>
           </label>
           <input
             required
-            value={form.name}
-            onChange={update('name')}
+            value={form.invoiceNumber}
+            onChange={update('invoiceNumber')}
             className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-            Company <span className="text-red-500">*</span>
-          </label>
-          <input
-            required
-            value={form.company}
-            onChange={update('company')}
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Customer</label>
+          <select
+            value={form.customerName}
+            onChange={update('customerName')}
             className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-            Email <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            required
-            value={form.email}
-            onChange={update('email')}
-            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
-          />
+          >
+            {customers.map((c) => (
+              <option key={c.id} value={c.name}>
+                {c.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Source</label>
-            <select
-              value={form.source}
-              onChange={update('source')}
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              Amount ($) <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              min="0"
+              required
+              value={form.amount}
+              onChange={update('amount')}
               className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
-            >
-              {SOURCES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Status</label>
@@ -145,24 +127,26 @@ export default function CustomerFormModal({ customer, customers = [], onClose, o
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Deal Value ($)</label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              Issue Date <span className="text-red-500">*</span>
+            </label>
             <input
-              type="number"
-              min="0"
-              value={form.dealValue}
-              onChange={update('dealValue')}
+              type="date"
+              required
+              value={form.issueDate}
+              onChange={update('issueDate')}
               className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
             />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-              Last Contact <span className="text-red-500">*</span>
+              Due Date <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
               required
-              value={form.lastContact}
-              onChange={update('lastContact')}
+              value={form.dueDate}
+              onChange={update('dueDate')}
               className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
             />
           </div>
@@ -183,7 +167,7 @@ export default function CustomerFormModal({ customer, customers = [], onClose, o
             disabled={saving}
             className="px-4 py-2 text-sm rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 disabled:opacity-60"
           >
-            {saving ? 'Saving…' : isEditing ? 'Save Changes' : 'Add Customer'}
+            {saving ? 'Saving…' : isEditing ? 'Save Changes' : 'Add Invoice'}
           </button>
         </div>
       </form>

@@ -1,46 +1,45 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search, ChevronUp, ChevronDown, Plus, Trash2, Pencil } from 'lucide-react'
 import { softDeleteRecord } from '../lib/softDelete'
-import CustomerFormModal from './CustomerFormModal'
+import InvoiceFormModal from './InvoiceFormModal'
 import Pagination from './Pagination'
 
 const STATUS_STYLES = {
-  New: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300',
-  Contacted: 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400',
-  Qualified: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400',
-  Proposal: 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400',
-  Won: 'bg-green-50 text-green-600 dark:bg-green-950/50 dark:text-green-400',
-  Lost: 'bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400',
+  Draft: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300',
+  Sent: 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400',
+  Paid: 'bg-green-50 text-green-600 dark:bg-green-950/50 dark:text-green-400',
+  Overdue: 'bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400',
 }
 
 const COLUMNS = [
-  { key: 'name', label: 'Name' },
-  { key: 'company', label: 'Company' },
+  { key: 'invoiceNumber', label: 'Invoice #' },
+  { key: 'customerName', label: 'Customer' },
+  { key: 'amount', label: 'Amount' },
   { key: 'status', label: 'Status' },
-  { key: 'dealValue', label: 'Deal Value' },
-  { key: 'lastContact', label: 'Last Contact' },
+  { key: 'issueDate', label: 'Issue Date' },
+  { key: 'dueDate', label: 'Due Date' },
 ]
 
 const PAGE_SIZE = 8
 
-export default function CustomerTable({ customers, onChanged }) {
+export default function InvoiceManager({ invoices, customers, onChanged }) {
   const [query, setQuery] = useState('')
   const [sortKey, setSortKey] = useState('id')
   const [sortDir, setSortDir] = useState('desc')
   const [page, setPage] = useState(1)
-  const [editingCustomer, setEditingCustomer] = useState(null)
+  const [editingInvoice, setEditingInvoice] = useState(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     const rows = q
-      ? customers.filter((c) =>
-          [c.name, c.company, c.status, c.dealValue, c.lastContact].some((v) =>
+      ? invoices.filter((i) =>
+          [i.invoiceNumber, i.customerName, i.amount, i.status, i.issueDate, i.dueDate].some((v) =>
             String(v).toLowerCase().includes(q)
           )
         )
-      : customers
+      : invoices
 
     return [...rows].sort((a, b) => {
       const av = a[sortKey]
@@ -52,7 +51,7 @@ export default function CustomerTable({ customers, onChanged }) {
         ? String(av).localeCompare(String(bv))
         : String(bv).localeCompare(String(av))
     })
-  }, [customers, query, sortKey, sortDir])
+  }, [invoices, query, sortKey, sortDir])
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
 
@@ -75,10 +74,10 @@ export default function CustomerTable({ customers, onChanged }) {
     }
   }
 
-  const handleDelete = async (customer) => {
-    if (!window.confirm('Delete this customer?')) return
-    setDeletingId(customer.id)
-    const { error } = await softDeleteRecord('customers', customer)
+  const handleDelete = async (invoice) => {
+    if (!window.confirm('Delete this invoice?')) return
+    setDeletingId(invoice.id)
+    const { error } = await softDeleteRecord('invoices', invoice)
     setDeletingId(null)
     if (!error) onChanged()
   }
@@ -87,7 +86,7 @@ export default function CustomerTable({ customers, onChanged }) {
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-          Customers <span className="text-gray-400 dark:text-gray-500 font-normal">({filtered.length})</span>
+          Invoices <span className="text-gray-400 dark:text-gray-500 font-normal">({filtered.length})</span>
         </h3>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
           <div className="relative">
@@ -96,17 +95,18 @@ export default function CustomerTable({ customers, onChanged }) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search customers..."
+              placeholder="Search invoices..."
               className="pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400 w-full sm:w-64"
             />
           </div>
           <button
             type="button"
             onClick={() => setShowAddModal(true)}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 shrink-0"
+            disabled={customers.length === 0}
+            className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 disabled:opacity-50 shrink-0"
           >
             <Plus size={15} />
-            Add Customer
+            Add Invoice
           </button>
         </div>
       </div>
@@ -132,36 +132,39 @@ export default function CustomerTable({ customers, onChanged }) {
             </tr>
           </thead>
           <tbody>
-            {paged.map((c) => (
+            {paged.map((inv) => (
               <tr
-                key={c.id}
-                onClick={() => setEditingCustomer(c)}
+                key={inv.id}
+                onClick={() => setEditingInvoice(inv)}
                 className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/60 dark:hover:bg-gray-800/60 cursor-pointer"
               >
-                <td className="py-3 pr-4 font-medium text-gray-800 dark:text-gray-100 whitespace-nowrap">{c.name}</td>
-                <td className="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{c.company}</td>
+                <td className="py-3 pr-4 font-medium text-gray-800 dark:text-gray-100 whitespace-nowrap">
+                  {inv.invoiceNumber}
+                </td>
+                <td className="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{inv.customerName}</td>
+                <td className="py-3 pr-4 text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                  ${inv.amount.toLocaleString()}
+                </td>
                 <td className="py-3 pr-4 whitespace-nowrap">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      STATUS_STYLES[c.status] || 'bg-gray-100 text-gray-600'
+                      STATUS_STYLES[inv.status] || 'bg-gray-100 text-gray-600'
                     }`}
                   >
-                    {c.status}
+                    {inv.status}
                   </span>
                 </td>
-                <td className="py-3 pr-4 text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                  ${c.dealValue.toLocaleString()}
-                </td>
-                <td className="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{c.lastContact}</td>
+                <td className="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{inv.issueDate}</td>
+                <td className="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{inv.dueDate}</td>
                 <td className="py-3 pr-4 text-right whitespace-nowrap">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation()
-                      setEditingCustomer(c)
+                      setEditingInvoice(inv)
                     }}
                     className="h-7 w-7 inline-flex items-center justify-center rounded-md text-gray-500 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 dark:hover:text-indigo-400 mr-1"
-                    title="Edit customer"
+                    title="Edit invoice"
                   >
                     <Pencil size={15} />
                   </button>
@@ -169,11 +172,11 @@ export default function CustomerTable({ customers, onChanged }) {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation()
-                      handleDelete(c)
+                      handleDelete(inv)
                     }}
-                    disabled={deletingId === c.id}
+                    disabled={deletingId === inv.id}
                     className="h-7 w-7 inline-flex items-center justify-center rounded-md text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 hover:text-red-700 disabled:opacity-40"
-                    title="Delete customer"
+                    title="Delete invoice"
                   >
                     <Trash2 size={15} />
                   </button>
@@ -183,7 +186,7 @@ export default function CustomerTable({ customers, onChanged }) {
             {paged.length === 0 && (
               <tr>
                 <td colSpan={COLUMNS.length + 1} className="py-6 text-center text-gray-400">
-                  No customers match your search.
+                  No invoices match your search.
                 </td>
               </tr>
             )}
@@ -200,17 +203,19 @@ export default function CustomerTable({ customers, onChanged }) {
       />
 
       {showAddModal && (
-        <CustomerFormModal
+        <InvoiceFormModal
+          invoices={invoices}
           customers={customers}
           onClose={() => setShowAddModal(false)}
           onSaved={onChanged}
         />
       )}
-      {editingCustomer && (
-        <CustomerFormModal
-          customer={editingCustomer}
+      {editingInvoice && (
+        <InvoiceFormModal
+          invoice={editingInvoice}
+          invoices={invoices}
           customers={customers}
-          onClose={() => setEditingCustomer(null)}
+          onClose={() => setEditingInvoice(null)}
           onSaved={onChanged}
         />
       )}

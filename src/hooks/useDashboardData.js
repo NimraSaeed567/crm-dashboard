@@ -10,13 +10,14 @@ export function useDashboardData() {
   const reload = useCallback(async () => {
     setState((s) => ({ ...s, loading: true }))
 
-    const [customersRes, activitiesRes, tasksRes] = await Promise.all([
+    const [customersRes, activitiesRes, tasksRes, invoicesRes] = await Promise.all([
       supabase.from('customers').select('*').is('deleted_at', null).order('id', { ascending: false }),
       supabase.from('activities').select('*').is('deleted_at', null).order('id', { ascending: false }),
       supabase.from('tasks').select('*').is('deleted_at', null).order('id', { ascending: false }),
+      supabase.from('invoices').select('*').is('deleted_at', null).order('id', { ascending: false }),
     ])
 
-    const error = customersRes.error || activitiesRes.error || tasksRes.error
+    const error = customersRes.error || activitiesRes.error || tasksRes.error || invoicesRes.error
     if (error) {
       setState({ loading: false, error, data: null })
       return
@@ -31,6 +32,16 @@ export function useDashboardData() {
       status: c.status,
       dealValue: Number(c.deal_value),
       lastContact: c.last_contact,
+    }))
+
+    const invoices = invoicesRes.data.map((i) => ({
+      id: i.id,
+      invoiceNumber: i.invoice_number,
+      customerName: i.customer_name,
+      amount: Number(i.amount),
+      status: i.status,
+      issueDate: i.issue_date,
+      dueDate: i.due_date,
     }))
 
     const pipeline = STAGES.map((stage) => ({
@@ -53,20 +64,20 @@ export function useDashboardData() {
       return { year: d.getFullYear(), month: d.getMonth(), label: d.toLocaleString('en-US', { month: 'short' }) }
     })
 
-    const wonCustomers = customers.filter((c) => c.status === 'Won')
+    const paidInvoices = invoices.filter((i) => i.status === 'Paid')
 
     const revenueByMonth = months.map(({ year, month, label }) => ({
       month: label,
-      revenue: wonCustomers
-        .filter((c) => {
-          const d = new Date(c.lastContact)
+      revenue: paidInvoices
+        .filter((i) => {
+          const d = new Date(i.issueDate)
           return d.getFullYear() === year && d.getMonth() === month
         })
-        .reduce((sum, c) => sum + c.dealValue, 0),
+        .reduce((sum, i) => sum + i.amount, 0),
     }))
     const revenueThisMonth = revenueByMonth.at(-1)?.revenue ?? 0
 
-    const wonCount = wonCustomers.length
+    const wonCount = customers.filter((c) => c.status === 'Won').length
     const conversionRate = customers.length ? Math.round((wonCount / customers.length) * 100) : 0
 
     const newLeadsThisMonth = customers.filter((c) => {
@@ -103,7 +114,7 @@ export function useDashboardData() {
     setState({
       loading: false,
       error: null,
-      data: { kpis, customers, pipeline, revenueByMonth, customersBySource, activities, tasks },
+      data: { kpis, customers, pipeline, revenueByMonth, customersBySource, activities, tasks, invoices },
     })
   }, [])
 

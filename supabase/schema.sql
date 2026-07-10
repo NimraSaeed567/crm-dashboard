@@ -119,3 +119,33 @@ create table if not exists audit_log (
 alter table audit_log enable row level security;
 create policy "public read audit_log" on audit_log for select using (true);
 create policy "public write audit_log" on audit_log for insert with check (true);
+
+-- Invoices: a real billing flow. A "Paid" invoice IS the receipt of payment —
+-- there's no separate receipts table. Dashboard revenue is computed from these
+-- (sum of Paid amounts grouped by issue_date month) instead of guessing from
+-- customer status.
+create table if not exists invoices (
+  id bigint generated always as identity primary key,
+  invoice_number text not null,
+  customer_name text not null,
+  amount numeric not null default 0,
+  status text not null default 'Draft',
+  issue_date date not null,
+  due_date date not null,
+  deleted_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+alter table invoices enable row level security;
+create policy "public read invoices" on invoices for select using (true);
+create policy "public write invoices" on invoices for insert with check (true);
+create policy "public update invoices" on invoices for update using (true);
+create policy "public delete invoices" on invoices for delete using (true);
+
+insert into invoices (invoice_number, customer_name, amount, status, issue_date, due_date) values
+  ('INV-1001', 'Henry Clarke', 3200, 'Paid', '2026-06-28', '2026-07-12'),
+  ('INV-1002', 'Oliver Bennett', 4100, 'Paid', '2026-06-30', '2026-07-14'),
+  ('INV-1003', 'Sophie Turner', 5400, 'Sent', '2026-07-01', '2026-07-15'),
+  ('INV-1004', 'Charlotte Hughes', 3600, 'Draft', '2026-07-03', '2026-07-17'),
+  ('INV-1005', 'Grace Mitchell', 2800, 'Draft', '2026-07-02', '2026-07-16'),
+  ('INV-1006', 'Thomas Reed', 1800, 'Overdue', '2026-06-10', '2026-06-24');
