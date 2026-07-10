@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import Customers from './pages/Customers'
 import Tasks from './pages/Tasks'
 import Activities from './pages/Activities'
+import AskAI from './pages/AskAI'
 import { ToastProvider } from './context/ToastContext'
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/customers" element={<Customers />} />
                 <Route path="/tasks" element={<Tasks />} />
                 <Route path="/activities" element={<Activities />} />
+                <Route path="/ask-ai" element={<AskAI />} />
               </Routes>
             </main>
           </div>

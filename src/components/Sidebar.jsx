@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Users, CheckSquare, ListChecks, X } from 'lucide-react'
+import { LayoutDashboard, Users, CheckSquare, ListChecks, Sparkles, X } from 'lucide-react'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/', end: true },
   { label: 'Customers', icon: Users, path: '/customers' },
   { label: 'Tasks', icon: CheckSquare, path: '/tasks' },
   { label: 'Activities', icon: ListChecks, path: '/activities' },
+  { label: 'Ask AI', icon: Sparkles, path: '/ask-ai' },
 ]
 
 export default function Sidebar({ open, onClose }) {
