@@ -3,13 +3,25 @@ import { supabase } from '../lib/supabaseClient'
 import { useToast } from '../context/ToastContext'
 import Modal from './Modal'
 
-const emptyForm = { title: '', dueDate: new Date().toISOString().slice(0, 10), done: false }
+const emptyForm = {
+  title: '',
+  dueDate: new Date().toISOString().slice(0, 10),
+  done: false,
+  customerName: '',
+}
 
-export default function TaskFormModal({ task, onClose, onSaved }) {
+export default function TaskFormModal({ task, customers = [], onClose, onSaved }) {
   const isEditing = Boolean(task)
   const showToast = useToast()
   const [form, setForm] = useState(
-    task ? { title: task.title, dueDate: task.dueDate, done: task.done } : emptyForm
+    task
+      ? {
+          title: task.title,
+          dueDate: task.dueDate,
+          done: task.done,
+          customerName: task.customerName || '',
+        }
+      : emptyForm
   )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -19,7 +31,12 @@ export default function TaskFormModal({ task, onClose, onSaved }) {
     setSaving(true)
     setError(null)
 
-    const payload = { title: form.title.trim(), due_date: form.dueDate, done: form.done }
+    const payload = {
+      title: form.title.trim(),
+      due_date: form.dueDate,
+      done: form.done,
+      customer_name: form.customerName || null,
+    }
 
     const { error } = isEditing
       ? await supabase.from('tasks').update(payload).eq('id', task.id)
@@ -48,6 +65,21 @@ export default function TaskFormModal({ task, onClose, onSaved }) {
             onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
             className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
           />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Customer</label>
+          <select
+            value={form.customerName}
+            onChange={(e) => setForm((f) => ({ ...f, customerName: e.target.value }))}
+            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-400"
+          >
+            <option value="">No customer</option>
+            {customers.map((c) => (
+              <option key={c.id} value={c.name}>
+                {c.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">

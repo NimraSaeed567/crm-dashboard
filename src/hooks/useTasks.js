@@ -22,6 +22,7 @@ export function useTasks() {
       title: t.title,
       dueDate: t.due_date,
       done: t.done,
+      customerName: t.customer_name,
     }))
 
     setState({ loading: false, error: null, tasks })

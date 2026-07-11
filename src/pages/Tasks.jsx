@@ -1,8 +1,10 @@
 import { useTasks } from '../hooks/useTasks'
+import { useCustomers } from '../hooks/useCustomers'
 import TaskManager from '../components/TaskManager'
 
 export default function Tasks() {
   const { loading, error, tasks, reload } = useTasks()
+  const { customers } = useCustomers()
 
   return (
     <div className="space-y-6">
@@ -17,7 +19,9 @@ export default function Tasks() {
           Failed to load tasks: {error.message}
         </div>
       )}
-      {!loading && !error && <TaskManager tasks={tasks} onChanged={reload} />}
+      {!loading && !error && (
+        <TaskManager tasks={tasks} customers={customers} onChanged={reload} />
+      )}
     </div>
   )
 }

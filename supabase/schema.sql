@@ -149,3 +149,41 @@ insert into invoices (invoice_number, customer_name, amount, status, issue_date,
   ('INV-1004', 'Charlotte Hughes', 3600, 'Draft', '2026-07-03', '2026-07-17'),
   ('INV-1005', 'Grace Mitchell', 2800, 'Draft', '2026-07-02', '2026-07-16'),
   ('INV-1006', 'Thomas Reed', 1800, 'Overdue', '2026-06-10', '2026-06-24');
+
+-- Link tasks to a customer (optional — general tasks can leave this null).
+alter table tasks add column if not exists customer_name text;
+
+-- Backfill the seeded tasks whose titles already name a customer.
+update tasks set customer_name = 'Sophie Turner' where title ilike '%Sophie Turner%' and customer_name is null;
+update tasks set customer_name = 'Henry Clarke' where title ilike '%Henry Clarke%' and customer_name is null;
+update tasks set customer_name = 'George Palmer' where title ilike '%George Palmer%' and customer_name is null;
+update tasks set customer_name = 'Charlotte Hughes' where title ilike '%Charlotte Hughes%' and customer_name is null;
+update tasks set customer_name = 'Oliver Bennett' where title ilike '%Oliver Bennett%' and customer_name is null;
+
+-- Auth: the app now has a real login screen (Supabase Auth, email+password).
+-- Tighten every policy so the anon key alone is no longer enough to read or
+-- write data via the API directly — a valid logged-in session is required.
+alter policy "public read customers" on customers using (auth.role() = 'authenticated');
+alter policy "public write customers" on customers with check (auth.role() = 'authenticated');
+alter policy "public update customers" on customers using (auth.role() = 'authenticated');
+alter policy "public delete customers" on customers using (auth.role() = 'authenticated');
+
+alter policy "public read activities" on activities using (auth.role() = 'authenticated');
+alter policy "public write activities" on activities with check (auth.role() = 'authenticated');
+alter policy "public update activities" on activities using (auth.role() = 'authenticated');
+alter policy "public delete activities" on activities using (auth.role() = 'authenticated');
+
+alter policy "public read tasks" on tasks using (auth.role() = 'authenticated');
+alter policy "public write tasks" on tasks with check (auth.role() = 'authenticated');
+alter policy "public update tasks" on tasks using (auth.role() = 'authenticated');
+alter policy "public delete tasks" on tasks using (auth.role() = 'authenticated');
+
+alter policy "public read invoices" on invoices using (auth.role() = 'authenticated');
+alter policy "public write invoices" on invoices with check (auth.role() = 'authenticated');
+alter policy "public update invoices" on invoices using (auth.role() = 'authenticated');
+alter policy "public delete invoices" on invoices using (auth.role() = 'authenticated');
+
+alter policy "public read audit_log" on audit_log using (auth.role() = 'authenticated');
+alter policy "public write audit_log" on audit_log with check (auth.role() = 'authenticated');
+
+alter policy "public read revenue_by_month" on revenue_by_month using (auth.role() = 'authenticated');

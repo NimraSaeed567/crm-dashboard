@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { Mail, Phone, Calendar, Activity as ActivityIcon } from 'lucide-react'
 
 const TYPE_ICON = {
@@ -16,9 +15,6 @@ export default function ActivityFeed({ activities }) {
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-5 h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Recent Activity</h3>
-        <Link to="/activities" className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700">
-          View all &rarr;
-        </Link>
       </div>
       <ul className="space-y-4">
         {sorted.map((activity) => {

@@ -7,13 +7,14 @@ import Pagination from './Pagination'
 
 const COLUMNS = [
   { key: 'title', label: 'Title' },
+  { key: 'customerName', label: 'Customer' },
   { key: 'dueDate', label: 'Due Date' },
   { key: 'done', label: 'Status' },
 ]
 
 const PAGE_SIZE = 8
 
-export default function TaskManager({ tasks, onChanged }) {
+export default function TaskManager({ tasks, customers = [], onChanged }) {
   const [query, setQuery] = useState('')
   const [sortKey, setSortKey] = useState('id')
   const [sortDir, setSortDir] = useState('desc')
@@ -26,8 +27,8 @@ export default function TaskManager({ tasks, onChanged }) {
     const q = query.trim().toLowerCase()
     const rows = q
       ? tasks.filter((t) =>
-          [t.title, t.dueDate, t.done ? 'done' : 'pending'].some((v) =>
-            String(v).toLowerCase().includes(q)
+          [t.title, t.customerName, t.dueDate, t.done ? 'done' : 'pending'].some((v) =>
+            String(v ?? '').toLowerCase().includes(q)
           )
         )
       : tasks
@@ -42,8 +43,8 @@ export default function TaskManager({ tasks, onChanged }) {
         return sortDir === 'asc' ? av - bv : bv - av
       }
       return sortDir === 'asc'
-        ? String(av).localeCompare(String(bv))
-        : String(bv).localeCompare(String(av))
+        ? String(av ?? '').localeCompare(String(bv ?? ''))
+        : String(bv ?? '').localeCompare(String(av ?? ''))
     })
   }, [tasks, query, sortKey, sortDir])
 
@@ -150,6 +151,9 @@ export default function TaskManager({ tasks, onChanged }) {
                   {t.title}
                 </td>
                 <td onClick={() => setEditingTask(t)} className="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap cursor-pointer">
+                  {t.customerName || '—'}
+                </td>
+                <td onClick={() => setEditingTask(t)} className="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap cursor-pointer">
                   {t.dueDate}
                 </td>
                 <td onClick={() => setEditingTask(t)} className="py-3 pr-4 whitespace-nowrap cursor-pointer">
@@ -203,10 +207,13 @@ export default function TaskManager({ tasks, onChanged }) {
         onPageChange={setPage}
       />
 
-      {showAddModal && <TaskFormModal onClose={() => setShowAddModal(false)} onSaved={onChanged} />}
+      {showAddModal && (
+        <TaskFormModal customers={customers} onClose={() => setShowAddModal(false)} onSaved={onChanged} />
+      )}
       {editingTask && (
         <TaskFormModal
           task={editingTask}
+          customers={customers}
           onClose={() => setEditingTask(null)}
           onSaved={onChanged}
         />

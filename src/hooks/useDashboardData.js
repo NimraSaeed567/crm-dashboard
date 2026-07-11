@@ -109,6 +109,7 @@ export function useDashboardData() {
       title: t.title,
       dueDate: t.due_date,
       done: t.done,
+      customerName: t.customer_name,
     }))
 
     setState({
