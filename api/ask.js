@@ -1,7 +1,10 @@
 const MODELS = [
   'google/gemma-4-31b-it:free',
   'google/gemma-4-26b-a4b-it:free',
+  'qwen/qwen3-next-80b-a3b-instruct:free',
+  'openai/gpt-oss-20b:free',
   'nvidia/nemotron-nano-9b-v2:free',
+  'nvidia/nemotron-3-nano-30b-a3b:free',
 ]
 
 export default async function handler(req, res) {
@@ -39,6 +42,7 @@ ${JSON.stringify(context ?? {}, null, 2)}`
         },
         body: JSON.stringify({
           model,
+          max_tokens: 2000,
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: question },
