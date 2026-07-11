@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     return
   }
 
-  const systemPrompt = `You are the AI assistant embedded in a CRM dashboard. Answer the user's question using ONLY the JSON data provided below — do not invent numbers or customers that aren't in it. Do any counting, filtering, or math yourself by reasoning over the data. Be concise (a few sentences, or a short list). Only prefix a number with $ when it is an actual money value (dealValue, revenue) — plain counts (number of customers, tasks, etc.) must never get a $ sign. Reply in plain text only — no markdown, no ** or * for bold/italic, no headers. If the data doesn't contain what's needed to answer, say so plainly instead of guessing.
+  const systemPrompt = `You are the AI assistant embedded in a CRM dashboard. Answer the user's question using ONLY the JSON data provided below — do not invent numbers or customers that aren't in it. Do any counting, filtering, or math yourself by reasoning over the data. Be concise (a few sentences, or a short list). Only prefix a number with $ when it is an actual money value (dealValue, revenue) — plain counts (number of customers, tasks, etc.) must never get a $ sign. Reply in plain text only — no markdown, no ** or * for bold/italic, no headers. Write naturally: never repeat the same noun phrase twice in one sentence (e.g. don't say "the number of customers who are Won... divided by the total number of customers" — say "Won customers... divided by all customers" instead). If the data doesn't contain what's needed to answer, say so plainly instead of guessing.
 
 CRM DATA:
 ${JSON.stringify(context ?? {}, null, 2)}`
