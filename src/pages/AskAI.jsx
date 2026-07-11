@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Sparkles, Send, Bot, User } from 'lucide-react'
+import { Sparkles, Send, Bot, User, Trash2 } from 'lucide-react'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { useAskAI } from '../hooks/useAskAI'
 
@@ -12,7 +12,7 @@ const SUGGESTIONS = [
 
 export default function AskAI() {
   const { loading: dataLoading, error: dataError, data } = useDashboardData()
-  const { messages, ask, loading } = useAskAI(data)
+  const { messages, ask, loading, clearChat } = useAskAI(data)
   const [input, setInput] = useState('')
 
   const handleSubmit = (e) => {
@@ -24,11 +24,23 @@ export default function AskAI() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Ask AI</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Ask questions about your customers, tasks, and activities in plain English.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Ask AI</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Ask questions about your customers, tasks, and activities in plain English.
+          </p>
+        </div>
+        {messages.length > 0 && (
+          <button
+            type="button"
+            onClick={clearChat}
+            className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 shrink-0"
+          >
+            <Trash2 size={14} />
+            Clear chat
+          </button>
+        )}
       </div>
 
       {dataLoading && <div className="p-10 text-center text-sm text-gray-400">Loading data…</div>}
