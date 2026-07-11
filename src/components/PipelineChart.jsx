@@ -46,7 +46,7 @@ export default function PipelineChart({ data }) {
               background: isDark ? '#18181b' : '#fff',
               color: isDark ? '#e4e4e7' : '#111827',
             }}
-            cursor={{ fill: isDark ? '#27272a' : '#f5f6fa' }}
+            cursor={{ fill: isDark ? 'rgba(255,255,255,0.06)' : '#f5f6fa' }}
           />
           <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={22}>
             {data.map((entry) => (

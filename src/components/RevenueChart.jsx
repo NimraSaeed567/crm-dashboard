@@ -35,6 +35,7 @@ export default function RevenueChart({ data }) {
               background: isDark ? '#18181b' : '#fff',
               color: isDark ? '#e4e4e7' : '#111827',
             }}
+            cursor={{ stroke: isDark ? '#3f3f46' : '#e5e7eb' }}
           />
           <Line
             type="monotone"
