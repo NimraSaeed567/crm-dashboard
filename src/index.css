@@ -6,3 +6,10 @@ body {
   margin: 0;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
 }
+
+/* Hide the browser's built-in password reveal/clear icons (Edge/IE) so they
+   don't overlap with our custom show/hide button. */
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear {
+  display: none;
+}
