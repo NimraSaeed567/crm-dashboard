@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { ASK_AI_STORAGE_KEY } from '../hooks/useAskAI'
 
 const AuthContext = createContext(null)
 
@@ -21,7 +22,10 @@ export function AuthProvider({ children }) {
     return { error }
   }
 
-  const signOut = () => supabase.auth.signOut()
+  const signOut = () => {
+    localStorage.removeItem(ASK_AI_STORAGE_KEY)
+    return supabase.auth.signOut()
+  }
 
   return (
     <AuthContext.Provider

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
-const STORAGE_KEY = 'ask-ai-messages'
+export const ASK_AI_STORAGE_KEY = 'ask-ai-messages'
+const STORAGE_KEY = ASK_AI_STORAGE_KEY
 
 function loadMessages() {
   try {
