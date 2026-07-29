@@ -1,16 +1,39 @@
-# React + Vite
+# CRM Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A CRM dashboard built with React 19, Vite, Tailwind CSS, and a Supabase backend.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Dashboard** — KPI cards, revenue chart, pipeline chart, lead-source breakdown, recent customers/invoices, and an activity feed
+- **Customers** — searchable/paginated customer table with create/edit modals and soft-delete
+- **Tasks** — task manager with create/edit modals
+- **Invoices** — invoice manager with create/edit modals
+- **Ask AI** — natural-language querying over dashboard data, backed by a Vercel serverless function (`api/ask.js`) that calls OpenRouter
+- Light/dark theme support and toast notifications throughout
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend:** React 19, React Router, Vite, Tailwind CSS 4
+- **Backend:** Supabase (Postgres + auth), schema in `supabase/schema.sql`
+- **Charts:** Recharts
+- **AI:** OpenRouter, called from a Vercel serverless function so the API key never reaches the client
+- **Deployment:** Vercel (`vercel.json`)
 
-## Expanding the Oxlint configuration
+## Setup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+npm install
+cp .env.example .env   # fill in VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, OPENROUTER_API_KEY
+npm run dev
+```
+
+Set up the database by running `supabase/schema.sql` against your Supabase project.
+
+## Scripts
+
+```bash
+npm run dev       # start the dev server
+npm run build     # production build
+npm run preview   # preview the production build locally
+npm run lint      # lint with oxlint
+```
