@@ -1,10 +1,10 @@
 const MODELS = [
+  'nvidia/nemotron-3.5-super-vl:free',
+  'nvidia/nemotron-3-ultra-550b-a55b:free',
+  'nvidia/nemotron-3.5-lightning:free',
+  'dots-studio/dots-3-note-preview:free',
   'google/gemma-4-31b-it:free',
   'google/gemma-4-26b-a4b-it:free',
-  'qwen/qwen3-next-80b-a3b-instruct:free',
-  'openai/gpt-oss-20b:free',
-  'nvidia/nemotron-nano-9b-v2:free',
-  'nvidia/nemotron-3-nano-30b-a3b:free',
 ]
 
 export default async function handler(req, res) {
